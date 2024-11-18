@@ -78,23 +78,9 @@ const TodoList = () => {
           />
         </div>
 
-        <div className="mb-3">
-          <label htmlFor="filterType" className="form-label">
-            Select Filter Type
-          </label>
-          <select
-            id="filterType"
-            className="form-select"
-            value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-          >
-            <option value="todo">Todo</option>
-            <option value="priority">Priority</option>
-            <option value="status">Status</option>
-          </select>
-        </div>
+       
       </form>
-      <table className="table table-striped table-primary">
+      <table className="table table-striped table-primary my-2">
         <thead>
           <tr>
             <th>#</th>
@@ -139,7 +125,7 @@ const TodoList = () => {
               //   }
               // }
 
-              if (filterType === "todo") {
+              if (search) {
                 return item.todo.toLowerCase().includes(search.toLowerCase());
               }
 
