@@ -1,5 +1,4 @@
 import AddTodo from "./components/AddTodo";
-import EditTodo from "./components/EditTodo";
 import TodoList from "./components/TodoList";
 
 function App() {

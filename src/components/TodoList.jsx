@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import todoStore from "../store/todoStore";
 import { observer } from "mobx-react-lite";
+import Dropdown from "react-dropdown";
+import "react-dropdown/style.css";
 
 const TodoList = () => {
   const [editTodo, setEditTodo] = useState("");
   const [todoEditStatus, setTodoEditStatus] = useState(false);
   const [currentEditId, setCurrentEditId] = useState(null);
+  const [prioritySearch, setPrioritySearch] = useState("All");
   const [search, setSearch] = useState("");
-  const [filterType, setFilterType] = useState("todo"); // New state
+  const [statusSearch, setStatusSearch] = useState("All");
+  const [filterType, setFilterType] = useState("todo");
+  console.log(statusSearch.toLowerCase());
 
+  const options = ["High", "Medium", "Low", "All"];
+  const statusOptions = ["Completed", "Pending", "All"];
+  const defaultStatusOptions = "All";
+  const defaultOption = "All";
   const removeTodoHandler = (id) => {
     todoStore.removeTodo(id);
   };
@@ -50,6 +59,25 @@ const TodoList = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+        <div className="w-50 mx-auto">
+          <label>Select Priority Level to Filter</label>
+          <Dropdown
+            onChange={(e) => setPrioritySearch(e.value)}
+            options={options}
+            value={defaultOption}
+            placeholder="Select an option"
+          />
+        </div>
+        <div className="mx-auto w-50">
+          <label>Select Status to Filter</label>
+          <Dropdown
+            onChange={(e) => setStatusSearch(e.value)}
+            options={statusOptions}
+            value={defaultStatusOptions}
+            placeholder="Select an option"
+          />
+        </div>
+
         <div className="mb-3">
           <label htmlFor="filterType" className="form-label">
             Select Filter Type
@@ -80,20 +108,44 @@ const TodoList = () => {
         <tbody>
           {todoStore.todos
             .filter((item) => {
-              if (search.toLowerCase() === "") return true;
+              if (
+                search.toLowerCase() === "" &&
+                prioritySearch === "All" &&
+                statusSearch === "All"
+              )
+                return true;
+              if (prioritySearch !== "All") {
+                return (
+                  prioritySearch.toLowerCase() === item.priority.toLowerCase()
+                );
+              }
+              if (statusSearch !== "All") {
+                const status = item.completed ? "completed" : "pending";
+                return status.toLowerCase() === statusSearch.toLowerCase();
+              }
+
+              // if (prioritySearch !== "All") {
+              //   if (
+              //     prioritySearch.toLowerCase() !== item.priority.toLowerCase()
+              //   ) {
+              //     return false;
+              //   }
+              // }
+
+              // if (statusSearch !== "All") {
+              //   const status = item.completed ? "completed" : "pending";
+              //   if (status.toLowerCase() !== statusSearch.toLowerCase()) {
+              //     return false;
+              //   }
+              // }
 
               if (filterType === "todo") {
                 return item.todo.toLowerCase().includes(search.toLowerCase());
-              } else if (filterType === "priority") {
-                return item.priority
-                  .toLowerCase()
-                  .includes(search.toLowerCase());
-              } else if (filterType === "status") {
-                const status = item.completed ? "completed" : "pending";
-                return status.includes(search.toLowerCase());
               }
-              return false;
+
+              return true;
             })
+
             .map((item, index) => (
               <tr key={item.id}>
                 <th>{index}</th>
